@@ -37,6 +37,11 @@ else
     adduser -u $MSF_UID -D $MSF_USER -g $MSF_USER -G $MSF_GROUP $MSF_USER
     # add user to metasploit group so it can read the source
     addgroup $MSF_USER $METASPLOIT_GROUP
+    PASSWD=$(date +%s | sha256sum | base64 | head -c 32 ; echo)
+    echo "$MSF_USER:$PASSWD" | chpasswd
+    mkdir -p /home/$MSF_USER/.ssh/
+    chown -R $MSF_USER:$MSF_GROUP /home/$MSF_USER/.ssh
+    chmod 700 /home/$MSF_USER/.ssh
     su-exec $MSF_USER "$@"
   # fall back to root exec if the user id already exists
   else
